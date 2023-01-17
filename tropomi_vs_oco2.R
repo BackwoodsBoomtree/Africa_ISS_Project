@@ -68,6 +68,7 @@ for (i in 1:length(trop_list)) {
   plot(t_sif, o_sif, axes = FALSE, xaxt="n", yaxt="n", xlab = NA, ylab = NA,
        xlim = c(0, 0.7), ylim = c(0, 0.7))
   abline(reg)
+  abline(a=0, b=1, lwd = 2, lty = 2, col = "red")
   axis(1, tck = 0.03, mgp=c(3, 0.2, 0))
   axis(2, tck = 0.03, mgp=c(3, 0.2, 0), las = 2)
   
