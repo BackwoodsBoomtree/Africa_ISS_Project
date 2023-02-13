@@ -1,9 +1,9 @@
 
 library(terra)
 
-in_dir    <- "G:/MCD43A4/reflectance/africa/WGLF"
-out_dir   <- "G:/MCD43A4/vis/africa/WGLF"
-out_name  <- "MCD43A4.061_WGLF"
+in_dir    <- "G:/MCD43A4/reflectance/africa/ECSF"
+out_dir   <- "G:/MCD43A4/vis/africa/ECSF"
+out_name  <- "MCD43A4.061_ECSF"
 lc_mask   <- vect("G:/Africa/Forest_Masks/dissolved/Africa_merged_2019_2.5km_Buffer.shp")
 
 file_list <- list.files(in_dir, pattern = "*.nc", full.names = TRUE)
