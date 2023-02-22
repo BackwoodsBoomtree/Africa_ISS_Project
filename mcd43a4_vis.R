@@ -1,9 +1,10 @@
 
 library(terra)
 
-in_dir    <- "G:/MCD43A4/reflectance/africa/ECSF"
-out_dir   <- "G:/MCD43A4/vis/africa/ECSF"
-out_name  <- "MCD43A4.061_ECSF"
+# NOTE: No forest for CNTF or MCBMF when using Africa_merged_2019_2.5km_Buffer.shp
+in_dir    <- "G:/MCD43A4/reflectance/africa/CNTF"
+out_dir   <- "G:/MCD43A4/vis/africa/CNTF"
+out_name  <- "MCD43A4.061_CNTF"
 lc_mask   <- vect("G:/Africa/Forest_Masks/dissolved/Africa_merged_2019_2.5km_Buffer.shp")
 
 file_list <- list.files(in_dir, pattern = "*.nc", full.names = TRUE)
