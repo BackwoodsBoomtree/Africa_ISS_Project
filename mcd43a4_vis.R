@@ -2,11 +2,11 @@
 library(terra)
 
 # NOTE: No forest for CNTF or MCBMF when using Africa_merged_2019_2.5km_Buffer.shp
-in_dir    <- "G:/MCD43A4/reflectance/africa/NECLF"
-out_dir   <- "G:/MCD43A4/vis/africa/daily/NECLF"
+in_dir    <- "G:/MCD43A4/reflectance/africa/NLF"
+out_dir   <- "G:/MCD43A4/vis/africa/test/test/daily/NLF"
 # vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI", "RED", "NIR")
 vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI")
-out_name  <- "MCD43A4.061_NECLF"
+out_name  <- "MCD43A4.061_NLF"
 lc_mask   <- vect("G:/Africa/Forest_Masks/dissolved/Africa_merged_2019_2.5km_Buffer.shp")
 
 file_list <- list.files(in_dir, pattern = "*.nc", full.names = TRUE)

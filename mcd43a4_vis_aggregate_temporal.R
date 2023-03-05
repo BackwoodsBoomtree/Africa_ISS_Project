@@ -3,8 +3,8 @@ library(terra)
 library(lubridate)
 library(stringr)
 
-in_dir    <- "G:/MCD43A4/vis/africa/daily"
-out_dir   <- "G:/MCD43A4/vis/africa/monthly"
+in_dir    <- "G:/MCD43A4/vis/africa/test/daily"
+out_dir   <- "G:/MCD43A4/vis/africa/test/monthly"
 # vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI", "RED", "NIR")
 vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI")
 

@@ -2,9 +2,10 @@
 library(terra)
 library(lubridate)
 
-in_dir    <- "G:/MCD43A4/vis/africa/monthly"
-out_dir   <- "G:/Africa/csv/ecoregions/mask_Dans"
-vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI", "RED", "NIR")
+in_dir    <- "G:/MCD43A4/vis/africa/test/monthly"
+out_dir   <- "G:/Africa/csv/ecoregions/mask_Dans/test"
+# vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI", "RED", "NIR")
+vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI")
 y_range   <- "2018-2022"
 
 ts_csv <- function(in_dir, out_dir, vi_list, y_range) {
@@ -39,7 +40,7 @@ ts_csv <- function(in_dir, out_dir, vi_list, y_range) {
       
       out_name <- paste0(save_dir, "/", "MCD43A4.061_", basename(dir_list[d]), "_", y_range, "_monthly_", vi_list[v], ".csv")
       
-      write.csv(df, out_name, row.names = FALSE, col.names = TRUE)
+      write.csv(df, out_name, row.names = FALSE)
       
       print(paste0("Saved ", basename(out_name), ". Number of rows:  ", nrow(df)))
     }

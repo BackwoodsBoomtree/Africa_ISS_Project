@@ -34,8 +34,8 @@ for (i in 1:length(eco_list)) {
   vi <- df[,2] / 10000
   
   plot(x, vi, type = "l", main = eco_list[i], axes = FALSE, xlab = NA, ylab = NA, cex.main = 3, ylim = c(0, 1))
-  rect(13, -1, 25, 100, col = rgb(0.85,0.85,0.85), border = NA)
-  rect(37, -1, 49, 100, col = rgb(0.85,0.85,0.85), border = NA)
+  rect(13, -1, 24, 100, col = rgb(0.85,0.85,0.85), border = NA)
+  rect(37, -1, 48, 100, col = rgb(0.85,0.85,0.85), border = NA)
   
   if (length(eco_csv_list) > 1) {
     for (e in 1:length(eco_csv_list)) {
@@ -48,7 +48,7 @@ for (i in 1:length(eco_list)) {
   # axis(1, labels = month_labs, at =  c(1:36), tck = 0.03, mgp=c(3, 0.2, 0), las = 2)
   # mtext(1, text = "Month", line = 3.75)
   # mtext(2, text = "SIFdaily", line = 3.75)
-  axis(1, labels = year_labs, at =  c(6.5, 18.5, 30.5, 42.5, 54.5), tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 3)
+  axis(1, labels = year_labs, at =  c(6.5, 18.5, 30.5, 42.5, 54.5), mgp=c(3, 1.5, 0), las = 1, cex.axis = 3)
   axis(2, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 3)
   
   if (i == 1) {
