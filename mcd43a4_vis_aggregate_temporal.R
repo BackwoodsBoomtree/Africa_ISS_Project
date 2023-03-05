@@ -5,7 +5,8 @@ library(stringr)
 
 in_dir    <- "G:/MCD43A4/vis/africa/daily"
 out_dir   <- "G:/MCD43A4/vis/africa/monthly"
-vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI", "RED", "NIR")
+# vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI", "RED", "NIR")
+vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI")
 
 to_month <- function(in_dir, out_dir, vi_list) {
   
