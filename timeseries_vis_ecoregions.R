@@ -5,10 +5,10 @@ in_dir     <- "G:/Africa/csv/ecoregions/mask_Dans"
 vi_list    <- c("EVI", "LSWI", "NDVI", "NIRv") # Alphabetical
 # NOTE: No forest for CNTF or MCBMF when using Africa_merged_2019_2.5km_Buffer.shp
 # Ordered to match TROPOMI figure
-eco_list   <- c("AECF", "CHF", "CCLF", "CSBCF", "ECSF", "EGF", "NDSF",
-                "NLF", "NECLF", "NWCLF", "WCSF", "WGLF")
+eco_list   <- c("AECF", "CHF", "CCLF", "CSBCF", "ECSF", "EGF",
+                "NECLF", "NWCLF", "WCSF", "WGLF")
 month_labs <- format(seq(as.Date("2018/1/1"), as.Date("2022/12/1"), "month"), "%Y-%m")
-year_labs  <- c(2018, 2019, 2020, 2021,2022)
+year_labs  <- c(2018, 2019, 2020, 2021, 2022)
 cols       <- c("#FE6100", "#648FFF", "#785EF0", "#DC267F")
 x          <- 1:60
   
@@ -20,9 +20,9 @@ mcd_dir_list <- grep(paste(vi_list, collapse = "|"), mcd_dir_list, value = TRUE)
 # All CSVs
 csv_list   <- list.files(mcd_dir_list, pattern = "*.csv", full.names = TRUE, recursive = TRUE)
 
-# PLOTT
+# PLOT
 
-cairo_pdf("G:/Africa/figs/timeseries_vis_ecoregions_2.5km_mask.pdf", width = 20, height = 15)
+cairo_pdf("G:/Africa/figs/timeseries_vis_ecoregions_2.5km_mask_v2.pdf", width = 20, height = 15)
 
 par(mfrow = c(4, 3), oma=c(1.0,0.1,1.25,0.1))
 
