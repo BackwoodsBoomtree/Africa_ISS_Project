@@ -10,7 +10,7 @@ df_precip <- read.csv("G:/Africa/csv/precip/TropicalAfricaMonthlyPrecipPerEcoreg
 trop_list <- c(trop_list[1:6], trop_list[9:12])
 df_precip <- df_precip[df_precip$ecoregion != "Nigerian lowland forests",]
 df_precip <- df_precip[df_precip$ecoregion != "Niger Delta swamp forests",]
-df_precip <- df_precip[df_precip$ecoregion != "Cross-Sanaga-Bioko coastal forests",]
+df_precip <- df_precip[df_precip$ecoregion != "Cross-Niger transition forests",]
 df_precip <- df_precip[df_precip$ecoregion != "Mount Cameroon and Bioko montane forests",]
 
 # Aphabetize the precip data to match TROPOMI

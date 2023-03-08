@@ -6,14 +6,15 @@ out_name  <- "G:/Africa/figs/ndvi_vs_precip.pdf"
 ndvi_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_NDVI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
 df_precip <- read.csv("G:/Africa/csv/precip/TropicalAfricaMonthlyPrecipPerEcoregion.csv")
 
-# Remove Niger forest
-ndvi_list <- c(ndvi_list[1:6], ndvi_list[9:12])
+# Remove some
+ndvi_list <- c(ndvi_list[1], ndvi_list[3], ndvi_list[2], ndvi_list[5], ndvi_list[6:7],
+              ndvi_list[10], ndvi_list[12:14])
 df_precip <- df_precip[df_precip$ecoregion != "Nigerian lowland forests",]
 df_precip <- df_precip[df_precip$ecoregion != "Niger Delta swamp forests",]
-df_precip <- df_precip[df_precip$ecoregion != "Cross-Sanaga-Bioko coastal forests",]
+df_precip <- df_precip[df_precip$ecoregion != "Cross-Niger transition forests",]
 df_precip <- df_precip[df_precip$ecoregion != "Mount Cameroon and Bioko montane forests",]
 
-# Aphabetize the precip data to match TROPOMI
+# Alphabetize the precip data to match TROPOMI
 df_precip <- df_precip[order(df_precip$ecoregion),]
 
 ### Can be used for pvalues
@@ -53,7 +54,7 @@ p_end   <- seq(36, 360, 36)
 for (i in 1:length(ndvi_list)) {
   
   # Read Data
-  ndvi   <- read.csv(ndvi_list[1])$NDVI / 10000
+  ndvi   <- read.csv(ndvi_list[i])$NDVI / 10000
   ndvi   <- ndvi[13:48]
   precip <- df_precip$mean[p_start[i]:p_end[i]]
   df     <- data.frame(precip, ndvi)
