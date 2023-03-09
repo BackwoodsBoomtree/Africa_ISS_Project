@@ -14,7 +14,7 @@ df_precip <- df_precip[df_precip$ecoregion != "Niger Delta swamp forests",]
 df_precip <- df_precip[df_precip$ecoregion != "Cross-Niger transition forests",]
 df_precip <- df_precip[df_precip$ecoregion != "Mount Cameroon and Bioko montane forests",]
 
-# Alphabetize the precip data to match TROPOMI
+# Alphabetize the precip data to match
 df_precip <- df_precip[order(df_precip$ecoregion),]
 
 ### Can be used for pvalues

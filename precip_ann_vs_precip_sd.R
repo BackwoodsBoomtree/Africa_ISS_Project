@@ -66,7 +66,7 @@ lab_sd  <- bquote("Standard Deviation of Monthly Precipitation (mm)")
 lab_ann <- bquote("Mean Annual Total Precipitation (mm)")
 
 #### Plot ####
-cairo_pdf(out_name, width = 2.5, height = 2.5)
+cairo_pdf(out_name, width = 3.5, height = 3.5)
 
 par(oma=c(3.5,3,0,1.5))
 
