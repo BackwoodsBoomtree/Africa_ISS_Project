@@ -3,14 +3,15 @@ library(terra)
 library(lubridate)
 library(stringr)
 
-in_dir    <- "G:/MCD43A4/vis/africa/test/daily"
-out_dir   <- "G:/MCD43A4/vis/africa/test/monthly"
+in_dir    <- "G:/MCD43A4/vis/africa/daily/NLNDSF"
+out_dir   <- "G:/MCD43A4/vis/africa/monthly"
 # vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI", "RED", "NIR")
 vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI")
 
 to_month <- function(in_dir, out_dir, vi_list) {
   
-  dir_list <- list.dirs(in_dir, full.names = TRUE, recursive = FALSE)
+  # dir_list <- list.dirs(in_dir, full.names = TRUE, recursive = FALSE) # For multiple directories
+  dir_list <- in_dir # For single directory
   
   for (d in 1:length(dir_list)) {
     
@@ -21,7 +22,7 @@ to_month <- function(in_dir, out_dir, vi_list) {
       # Create output dirs
       if (!dir.exists(vi_dir)) {
         dir.create(vi_dir, recursive = TRUE)
-        print(paste0("Created ", vi_dir))
+        message(paste0("Created ", vi_dir))
       }
       
       vi_file_list  <- list.files(dir_list[d], pattern = paste0("*", vi_list[v], ".nc"), full.names = TRUE)
@@ -44,7 +45,7 @@ to_month <- function(in_dir, out_dir, vi_list) {
         
         for (m in 1:length(ym_list)) {
           
-          print(paste0("Working on ", ym_list[m], " for ", vi_list[v], " in ", basename(dir_list[d])))
+          message(paste0("Working on ", ym_list[m], " for ", vi_list[v], " in ", basename(dir_list[d])))
           
           vi_file_list_month <- vi_file_list_year[grepl(ym_list[m], vi_file_list_year)]
           
@@ -56,7 +57,7 @@ to_month <- function(in_dir, out_dir, vi_list) {
           
           writeCDF(out_raster, filename = out_name, varname = vi_list[v], unit = "", compression = 4, missval = -9999, overwrite = TRUE)
           
-          print(paste0("Saved ", out_name))
+          message(paste0("Saved ", out_name, "\n"))
         }
       }
     }
