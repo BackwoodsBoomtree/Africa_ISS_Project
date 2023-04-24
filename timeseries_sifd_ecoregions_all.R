@@ -9,9 +9,11 @@ year_labs  <- c(2019, 2020, 2021)
 x          <- 1:36
 err_col    <- "#8ab8e6"
 
-# No data for Nigerian Lowland Forest for OCO, so add NA to the list
-oco2_csv_list    <- c(oco2_csv_list[1:7], NA, oco2_csv_list[8:11])
-oco3_csv_list    <- c(oco3_csv_list[1:7], NA, oco3_csv_list[8:11])
+# Remove Nigerian Lowland and Niger Delta Swamp as I combined them
+tropomi_csv_list <- c(tropomi_csv_list[1:6], tropomi_csv_list[8], tropomi_csv_list[10:13])
+oco2_csv_list    <- c(oco2_csv_list[1:6], oco2_csv_list[8:12])
+oco3_csv_list    <- c(oco3_csv_list[1:6], oco3_csv_list[8], oco3_csv_list[10:13])
+
 
 cairo_pdf("G:/Africa/figs/timeseries_sifd_ecoregions_all_2.5km_mask.pdf", width = 20, height = 15)
 
@@ -20,12 +22,17 @@ par(mfrow = c(4, 3), oma=c(1.0,0.1,1.25,0.1))
 for (i in 1:length(tropomi_csv_list)) {
   
   # Get ecoregion name
-  f_name <- basename(tropomi_csv_list[i])
-  tit    <- substr(f_name, 1, nchar(f_name) - 19)
-  tit    <- substr(tit, 25, nchar(tit))
-  tit    <- gsub("_", " ", tit)
-  tit    <- str_to_title(tit)
-  tit    <- str_sub(tit, end = -2)
+  if (i != 7) {
+    f_name <- basename(tropomi_csv_list[i])
+    tit    <- substr(f_name, 1, nchar(f_name) - 19)
+    tit    <- substr(tit, 25, nchar(tit))
+    tit    <- gsub("_", " ", tit)
+    tit    <- str_to_title(tit)
+    tit    <- str_sub(tit, end = -2)
+  } else {
+    tit    <- "Nigerian Lowland and Niger Delta Forest"
+  }
+
   
   # Do TROPOMI First
   tropomi_df     <- read.csv(tropomi_csv_list[i], header = TRUE)
@@ -46,26 +53,26 @@ for (i in 1:length(tropomi_csv_list)) {
   lines(x, tropomi_sifd, lwd = 2)
   
   # Add OCO2 and 3 (No data for Nigerian lowland forests)
-  if (i != 8) {
-    oco2_df     <- read.csv(oco2_csv_list[i], header = TRUE)
-    oco3_df     <- read.csv(oco3_csv_list[i], header = TRUE)
-    
-    # Toss out points where n < 3
-    for (j in 1:nrow(oco2_df)) {
-      if (!is.na(oco2_df$n[j])) {
-        if (oco2_df$n[j] < 3) {
-          oco2_df[j,] <- NA
-        }
+
+  oco2_df     <- read.csv(oco2_csv_list[i], header = TRUE)
+  oco3_df     <- read.csv(oco3_csv_list[i], header = TRUE)
+  
+  # Toss out points where n < 3
+  for (j in 1:nrow(oco2_df)) {
+    if (!is.na(oco2_df$n[j])) {
+      if (oco2_df$n[j] < 3) {
+        oco2_df[j,] <- NA
       }
     }
-    
-    for (j in 1:nrow(oco3_df)) {
-      if (!is.na(oco3_df$n[j])) {
-        if (oco3_df$n[j] < 3) {
-          oco3_df[j,] <- NA
-        }
+  }
+  
+  for (j in 1:nrow(oco3_df)) {
+    if (!is.na(oco3_df$n[j])) {
+      if (oco3_df$n[j] < 3) {
+        oco3_df[j,] <- NA
       }
     }
+
     
     oco2_sifd   <- oco2_df[,1]
     oco2_sem    <- oco2_df[,3]

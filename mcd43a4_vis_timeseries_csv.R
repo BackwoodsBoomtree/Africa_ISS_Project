@@ -2,8 +2,8 @@
 library(terra)
 library(lubridate)
 
-in_dir    <- "G:/MCD43A4/vis/africa/test/monthly"
-out_dir   <- "G:/Africa/csv/ecoregions/mask_Dans/test"
+in_dir    <- "G:/MCD43A4/vis/africa/monthly"
+out_dir   <- "G:/Africa/csv/ecoregions/mask_Dans"
 # vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI", "RED", "NIR")
 vi_list   <- c("EVI", "NDVI", "NIRv", "LSWI")
 y_range   <- "2018-2022"
@@ -14,7 +14,7 @@ ts_csv <- function(in_dir, out_dir, vi_list, y_range) {
   
   for (d in 1:length(dir_list)) {
     
-    print(paste0("Working on ", basename(dir_list[d])))
+    message(paste0("Working on ", basename(dir_list[d])))
     
     for (v in 1:length(vi_list)) {
       
@@ -25,7 +25,7 @@ ts_csv <- function(in_dir, out_dir, vi_list, y_range) {
         dir.create(save_dir, recursive = TRUE)
       }
       
-      print(paste0("Working on ", vi_list[v], " for ", basename(dir_list[d])))
+      message(paste0("Working on ", vi_list[v], " for ", basename(dir_list[d])))
       
       vi_file_list <- list.files(dir_list[d], pattern = paste0("\\_", vi_list[v], "\\."), full.names = TRUE)
       
@@ -42,7 +42,7 @@ ts_csv <- function(in_dir, out_dir, vi_list, y_range) {
       
       write.csv(df, out_name, row.names = FALSE)
       
-      print(paste0("Saved ", basename(out_name), ". Number of rows:  ", nrow(df)))
+      message(paste0("Saved ", basename(out_name), ". Number of rows: ", nrow(df), "\n"))
     }
   }
 }
