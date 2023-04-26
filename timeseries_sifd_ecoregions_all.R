@@ -8,6 +8,8 @@ month_labs <- format(seq(as.Date("2019/1/1"), as.Date("2021/12/1"), "month"), "%
 year_labs  <- c(2019, 2020, 2021)
 x          <- 1:36
 err_col    <- "#8ab8e6"
+oco2_col <- rgb(255, 128, 128, max = 255)
+oco3_col <- rgb(128, 128, 255, max = 255)
 
 # Remove Nigerian Lowland and Niger Delta Swamp as I combined them
 tropomi_csv_list <- c(tropomi_csv_list[1:6], tropomi_csv_list[8], tropomi_csv_list[10:13])
@@ -50,7 +52,7 @@ for (i in 1:length(tropomi_csv_list)) {
   # }
   
   polygon(c(x, rev(x)), c(tropomi_sifd + tropomi_sem, rev(tropomi_sifd - tropomi_sem)), col = err_col, border = NA)
-  lines(x, tropomi_sifd, lwd = 2)
+  lines(x, tropomi_sifd, lwd = 3)
   
   # Add OCO2 and 3 (No data for Nigerian lowland forests)
 
@@ -72,6 +74,7 @@ for (i in 1:length(tropomi_csv_list)) {
         oco3_df[j,] <- NA
       }
     }
+  }
 
     
     oco2_sifd   <- oco2_df[,1]
@@ -80,23 +83,26 @@ for (i in 1:length(tropomi_csv_list)) {
     oco3_sifd   <- oco3_df[,1]
     oco3_sem    <- oco3_df[,3]
 
-    points(x, oco2_sifd, col = "red", pch = 16)
-    arrows(x0 = x, y0 = oco2_sifd - oco2_sem, x1 = x, y1 = oco2_sifd + oco2_sem, code = 3, angle = 90, length = 0.05, col = "red", lwd = 2)
+    points(x, oco2_sifd, col = oco2_col, pch = 16)
+    arrows(x0 = x, y0 = oco2_sifd - oco2_sem, x1 = x, y1 = oco2_sifd + oco2_sem, code = 3, angle = 90, length = 0.05, col = oco2_col, lwd = 3)
     
-    points(x, oco3_sifd, col = "blue", pch = 16)
-    arrows(x0 = x, y0 = oco3_sifd - oco3_sem, x1 = x, y1 = oco3_sifd + oco3_sem, code = 3, angle = 90, length = 0.05, col = "blue", lwd = 2)
-    
-  }
+    points(x, oco3_sifd, col = oco3_col, pch = 16)
+    arrows(x0 = x, y0 = oco3_sifd - oco3_sem, x1 = x, y1 = oco3_sifd + oco3_sem, code = 3, angle = 90, length = 0.05, col = oco3_col, lwd = 3)
 
 
 
   # axis(1, labels = month_labs, at =  c(1:36), tck = 0.03, mgp=c(3, 0.2, 0), las = 2)
   # mtext(1, text = "Month", line = 3.75)
   # mtext(2, text = "SIFdaily", line = 3.75)
-  axis(1, labels = year_labs, at =  c(6.5, 18.5, 30.5), tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 3)
+  axis(1, labels = year_labs, at =  c(1, 13, 25), tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 3)
   axis(2, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 3)
   box()
   
 }
+
+plot.new()
+lab_sif     <- bquote("Values are SIFdaily 740nm (mW/m"^"2"*"/sr/nm)")
+legend("topright", legend = c("TROPOMI SIF", "OCO-2 SIF", "OCO-3 SIF", lab_sif),
+       col = c("black", oco2_col, oco3_col), lty = c(1, NA, NA, NA), pch = c(NA, 16, 16, NA), lwd = 3, cex = 2)
 
 dev.off()
