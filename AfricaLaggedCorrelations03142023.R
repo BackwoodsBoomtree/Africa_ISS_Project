@@ -1,63 +1,39 @@
-rm(list=ls())
-mypaths = .libPaths()
-mypaths = c("C:/RLibraries", mypaths[1])
-.libPaths(mypaths)
 
-# load libraries
-library(raster)
-library(rgdal)
-library(ggplot2) 
-library(reshape2)
-library(data.table)
-# Libraries
 library(tidyverse)
-library(hrbrthemes)
-library(viridis)
-library(forcats)
-library(sf)
-library(extrafont)
-require('Hmisc')
-library(spatialEco)
-library(DT)
-library(reactable)
-library(reactablefmtr)
 library(cowplot)
-library(leaflet)
-library(tmap)
-library(EnvStats)
-library(stringi)
-library(terra)
-library(scales)
-library(RColorBrewer)
-sf::sf_use_s2(FALSE) #This is important, if not run, st_intersects returns 0 features
 
 
 # Read in what we need to plot
-rootPath <- 'F:/Dropbox (Univ. of Oklahoma)/work/Wanyama/Projects/NASA_Carbon_Project/'
-outData <- paste0(rootPath, 'Africa/Africa_Precipitation/Maps_and_Figures/')
-ecoregions <- st_read(paste0(rootPath, 'Africa/Shapefiles/Combined_Ecoregions.shp')) %>% 
-  st_transform(crs='epsg:4326')
+evi_list     <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_EVI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
+lswi_list    <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_LSWI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
+ndvi_list    <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_NDVI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
+tropomi_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/TROPOMI", pattern = "*.csv", full.names = TRUE)
+precip_csv       <- "G:/Africa/csv/precip/TropicalAfricaMonthlyPrecipPerEcoregionESAMask04252023.csv"
+out_start        <- "G:/Africa/figs/lags/"
 
-#Function to compute crosscorrelations between CHIRPS and each veg index, and plotting the CCF graphs
-vegFun <- function(index1){
+# Remove Nigerian Lowland and Niger Delta Swamp as I combined them
+tropomi_list <- c(tropomi_list[1:6], tropomi_list[8], tropomi_list[10:13])
+
+#Function to compute cross-correlations between CHIRPS and each veg
+vegFun <- function(index, vi_list, precip_csv){
   ###
-  evi_list <- list.files(paste0(rootPath, "Africa/Africa_Precipitation/Russ_Veg_Indices/MCD43A4_",index1,"/monthly"), pattern = "*.csv", full.names = TRUE, recursive = TRUE)
-  df_precip <- read.csv(paste0(rootPath, "Africa/Africa_Precipitation/TropicalAfricaMonthlyPrecipPerEcoregion_03152023.csv"))
+  evi_list  <- vi_list
+  df_precip <- read.csv(precip_csv, header = TRUE)
   
-  # Remove some
-  evi_list <- c(evi_list[1], evi_list[3], evi_list[2], evi_list[5], evi_list[6:7],
-                evi_list[10], evi_list[12:14])
-  df_precip <- df_precip[df_precip$ecoregion != "Nigerian lowland forests",]
-  df_precip <- df_precip[df_precip$ecoregion != "Niger Delta swamp forests",]
-  df_precip <- df_precip[df_precip$ecoregion != "Cross-Niger transition forests",]
-  df_precip <- df_precip[df_precip$ecoregion != "Mount Cameroon and Bioko montane forests",]
-  
+  if (index != "SIF") {
+    # Remove Mount Cameroon and Bioko montane forests and rearrange to match
+    evi_list <- c(evi_list[1], evi_list[3], evi_list[2], evi_list[4:6],
+                  evi_list[9], evi_list[8], evi_list[10:12])
+  }
+
   # Alphabetize the precip data to match
   df_precip <- df_precip[order(df_precip$ecoregion),]
+  df_precip$ecoregion[df_precip$ecoregion == "Niger Delta swamp and Nigerian lowland forests"] <- "Nigerian Lowland and Niger Delta Swamp Forest"
+  row.names(df_precip) <- 1:nrow(df_precip)
   
   # Index for precip data
-  p_start <- seq(1, 360, 36)
-  p_end   <- seq(36, 360, 36)
+  p_start <- seq(1, 396, 36)
+  p_end   <- seq(36, 396, 36)
   
   #Dataframe for storing means
   eviAll <- data.frame(matrix(ncol = 1, nrow = 0))
@@ -70,14 +46,20 @@ vegFun <- function(index1){
     
     # Read Data
     evi  <- read.csv(evi_list[i])
-    evi1 <- evi[[index1]]/10000
+    if (index != "SIF") {
+      evi1 <- evi[[index]]/10000
+      evi  <- as.data.frame(evi1[13:48])
+    } else {
+      evi1 <- evi$Mean
+      evi  <- as.data.frame(evi1)
+    }
+  
     
-    evi  <- as.data.frame(evi1[13:48])
-    colnames(evi) <- 'eviMean'
-    eviAll <- rbind(eviAll, evi)
-    precip <- as.data.frame(df_precip$mean[p_start[i]:p_end[i]])
+    colnames(evi)    <- 'eviMean'
+    eviAll           <- rbind(eviAll, evi)
+    precip           <- as.data.frame(df_precip$mean[p_start[i]:p_end[i]])
     colnames(precip) <- 'precipMean'
-    precipAll <- rbind(precipAll, precip)
+    precipAll        <- rbind(precipAll, precip)
   }
   
   #Lagged correlation function
@@ -120,60 +102,65 @@ vegFun <- function(index1){
   df_ci <- combined_df %>% 
     group_by(region1) %>% 
     summarise(ci = qnorm((1 + 0.95)/2)/sqrt(n()))
+  
   #Plot lagged correlations
-  # Western Guinean lowland forests
-  wglf <- laggedCorPlot(df_acf, 'Western Guinean lowland forests', 'cyan', "", "CCF")
-  #Eastern Guinean Forests
-  egf <- laggedCorPlot(df_acf, 'Eastern Guinean forests', 'cyan')
-  #Nigerian Lowland Forests
-  #nlf <- laggedCorPlot(df_acf, 'Nigerian lowland forests', 'darkorchid')
   
-  #Niger Delta Swamp Forests
-  #ndsf <- laggedCorPlot(df_acf, 'Niger Delta swamp forests', 'darkorchid', "", "CCF")
-  
-  #Cross-Sanaga-Bioko Coastal Forests
-  csbf <- laggedCorPlot(df_acf, 'Cross-Sanaga-Bioko coastal forests', 'darkorchid')
-  
-  #Cross-Niger Transition Forests - wont work, no forest mask available. 
-  # cntf <- precip_fun(monthly, 'Cross-Niger transition forests')
-  # name2 = paste0(outfolder, "CHIRPS_SIF_Cross-Niger_Transition_Forests_09202022.tiff")
-  # ggsave(name2, units="cm", width=30, height=15, dpi=600, compression = 'lzw')
-  
-  #Cameroonian Highlands Forests
-  chf <- laggedCorPlot(df_acf, 'Cameroonian Highlands forests', 'darkorchid', "", "CCF")
-  
-  #Northeastern Congolian Lowland Forests
-  neclf <- laggedCorPlot(df_acf, 'Northeastern Congolian lowland forests', 'darkgreen', "")
-  
-  #Central Congolian Lowland Forests
-  cclf <- laggedCorPlot(df_acf, 'Central Congolian lowland forests', 'darkgreen')
-  
-  #Central Congolian Lowland Forests
-  nwclf <- laggedCorPlot(df_acf, 'Northwestern Congolian lowland forests', 'darkgreen', "", "CCF")
-  
-  #Atlantic Equatorial Coastal Forests
-  aecf <- laggedCorPlot(df_acf, 'Atlantic Equatorial coastal forests', 'darkgreen', "Lag (months)")
-  
-  #Eastern Congolian Swamp Forests
-  ecsf <- laggedCorPlot(df_acf, 'Eastern Congolian swamp forests', 'darkgreen', "Lag (months)", "")
-  
-  #Western Congolian swamp Forests
-  wcsf <- laggedCorPlot(df_acf, 'Western Congolian swamp forests', 'darkgreen', "Lag (months)", "CCF")
-  
-  all_figs <- plot_grid(wglf, egf, csbf, chf, neclf, cclf, nwclf, aecf, ecsf, wcsf, align = "v", labels = NULL, scale = c(1, 1), ncol = 3)
-  all_figs
-  name2 = paste0(outData, "CHIRPS_", index1, "_Lagged_Correlations_03152023.tiff")
-  ggsave(name2, units="cm", width=45, height=22, dpi=600, compression = 'lzw')
+  return(df_acf)
 }
 
 #EVI
-eviFigs <- vegFun(index1 = 'EVI')
-#LSWI
-lswiFigs <- vegFun(index1 = 'LSWI')
-#NDVI
-ndviFigs <- vegFun(index1 = 'NDVI')
-#NIRv
-nirvFigs <- vegFun(index1 = 'NIRv')
+evi_lag  <- vegFun("EVI", evi_list, precip_csv)
+lswi_lag <-  vegFun("LSWI", lswi_list, precip_csv)
+ndvi_lag <-  vegFun("NDVI", ndvi_list, precip_csv)
+sif_lag  <-  vegFun("SIF", tropomi_list, precip_csv)
+
+cairo_pdf("G:/Africa/figs/lag_correlations.pdf", width = 20, height = 15)
+
+x <- -6:6
+y <- c(-1, 1)
+
+eco_index <- seq(1, 143, by = 13)
+
+par(mfrow = c(4, 3), oma=c(1.0,4,1.25,0.1))
+
+for (i in 1:11) {
+  
+  # Get ecoregion name
+  if (i != 7) {
+    f_name <- basename(tropomi_list[i])
+    tit    <- substr(f_name, 1, nchar(f_name) - 19)
+    tit    <- substr(tit, 25, nchar(tit))
+    tit    <- gsub("_", " ", tit)
+    tit    <- str_to_title(tit)
+    tit    <- str_sub(tit, end = -2)
+  } else {
+    tit    <- "Nigerian Lowland and Niger Delta Forest"
+  }
+  
+  
+  # Do TROPOMI First
+  plot(x, rep(0, 13), type = "l", main = tit, 
+       axes = FALSE, xlab = NA, ylab = NA, cex.main = 2.8, ylim = y, lwd = 3, col = "gray")
+  lines(x, sif_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3)
+  lines(x, ndvi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#dc267f")
+  lines(x, evi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#FE6100")
+  lines(x, lswi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#ffb000")
+
+  axis(1, labels = TRUE, tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 3)
+  axis(2, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 3)
+  box()
+  
+}
+
+mtext("Lag", side = 1, outer = TRUE, line = -1, cex = 3)
+mtext("Coefficient", side = 2, outer = TRUE, line = 0.5, cex = 3)
+
+plot.new()
+legend("top", legend = c("TROPOMI SIF", "NDVI", "EVI", "LSWI"),
+       col = c("black", "#dc267f", "#FE6100", "#ffb000"), lty = 1, lwd = 3, cex = 2)
+
+dev.off()
+
 
 #Notes
 '
