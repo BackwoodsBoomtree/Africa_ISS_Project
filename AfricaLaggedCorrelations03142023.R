@@ -114,6 +114,24 @@ lswi_lag <-  vegFun("LSWI", lswi_list, precip_csv)
 ndvi_lag <-  vegFun("NDVI", ndvi_list, precip_csv)
 sif_lag  <-  vegFun("SIF", tropomi_list, precip_csv)
 
+# Get annual mean total precip
+precip_df <- read.csv(precip_csv, header = TRUE)
+precip_df <- precip_df[order(precip_df$ecoregion),]
+precip_df$ecoregion[precip_df$ecoregion == "Niger Delta swamp and Nigerian lowland forests"] <- "Nigerian Lowland and Niger Delta Swamp Forest"
+row.names(precip_df) <- 1:nrow(precip_df)
+p_start <- seq(1, 396, 36)
+p_end   <- seq(36, 396, 36)
+for (i in 1:length(unique(precip_df$ecoregion))) {
+  precip_eco <- sum(precip_df$mean[(p_start[i]):(p_end[i])]) / 3
+  
+  if (i == 1) {
+    precip_ann <- precip_eco
+  } else {
+    precip_ann <- c(precip_ann, precip_eco)
+  }
+}
+precip_ann <- round(precip_ann)
+
 cairo_pdf("G:/Africa/figs/lag_correlations.pdf", width = 20, height = 15)
 
 x <- -6:6
@@ -143,11 +161,12 @@ for (i in 1:11) {
        axes = FALSE, xlab = NA, ylab = NA, cex.main = 2.8, ylim = y, lwd = 3, col = "gray")
   lines(x, sif_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3)
   lines(x, ndvi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#dc267f")
-  lines(x, evi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#FE6100")
+  lines(x, evi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#FE6100", lty = 2)
   lines(x, lswi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#ffb000")
 
   axis(1, labels = TRUE, tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 3)
   axis(2, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 3)
+  legend("topleft", legend = paste0("MAP: ", precip_ann[i], " mm"), cex = 2, bty = "n")
   box()
   
 }
@@ -156,8 +175,9 @@ mtext("Lag", side = 1, outer = TRUE, line = -1, cex = 3)
 mtext("Coefficient", side = 2, outer = TRUE, line = 0.5, cex = 3)
 
 plot.new()
-legend("top", legend = c("TROPOMI SIF", "NDVI", "EVI", "LSWI"),
-       col = c("black", "#dc267f", "#FE6100", "#ffb000"), lty = 1, lwd = 3, cex = 2)
+legend("top", legend = c("TROPOMI SIF", "NDVI", "EVI", "LSWI", "MAP: Mean Annual Precipitation"),
+       col = c("black", "#dc267f", "#FE6100", "#ffb000"),
+       lty = c(1, 1, 2, 1), lwd = c(3, 3, 3, 3, NA), cex = 2)
 
 dev.off()
 
