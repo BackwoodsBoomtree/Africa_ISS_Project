@@ -1,6 +1,36 @@
 library(corrplot)
+library(ncdf4)
 
-out_name    <- "G:/SIF_comps/figs/v2/corr_matrix_v2.pdf"
+out_name         <- "G:/Africa/figs/correlation_matrix.pdf"
+era5_csv_list    <- list.files("G:/ERA5/tropical_africa_ecoregions_stats", pattern = "*.csv", full.names = TRUE)
+tropomi_csv_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/TROPOMI", pattern = "*.csv", full.names = TRUE)
+oco2_csv_list    <- list.files("G:/Africa/csv/ecoregions/mask_Dans/OCO2", pattern = "*.csv", full.names = TRUE)
+oco3_csv_list    <- list.files("G:/Africa/csv/ecoregions/mask_Dans/OCO3", pattern = "*.csv", full.names = TRUE)
+precip_csv       <- read.csv("G:/Africa/csv/precip/TropicalAfricaMonthlyPrecipPerEcoregionESAMask04252023.csv", header = TRUE)
+mcd_csv_dir      <- "G:/Africa/csv/ecoregions/mask_Dans"
+vi_list          <- c("EVI", "LSWI", "NDVI", "NIRv") # Alphabetical
+
+# Remove Nigerian Lowland and Niger Delta Swamp as I combined them
+tropomi_csv_list <- c(tropomi_csv_list[1:6], tropomi_csv_list[8], tropomi_csv_list[10:13])
+
+# Sort Precip df and remove
+precip_df <- precip_csv[order(precip_csv$ecoregion),]
+precip_df$ecoregion[precip_df$ecoregion == "Niger Delta swamp and Nigerian lowland forests"] <- "Nigerian Lowland and Niger Delta Swamp Forest"
+row.names(precip_df) <- 1:nrow(precip_df)
+
+# Get only the directories for VIs
+mcd_dir_list <- list.dirs(mcd_csv_dir, full.names = TRUE, recursive = FALSE)
+mcd_dir_list <- grep("*MCD43A4", mcd_dir_list, value = TRUE)
+mcd_dir_list <- grep(paste(vi_list, collapse = "|"), mcd_dir_list, value = TRUE)
+
+# All CSVs
+vi_csv_list   <- list.files(mcd_dir_list, pattern = "*.csv", full.names = TRUE, recursive = TRUE)
+
+## BUILD DF for regressions
+df <- data.frame(matrix(nrow = 36, ncol = 10))
+
+
+
 
 # P function
 cor.mtest <- function(mat, ...) {
@@ -10,13 +40,18 @@ cor.mtest <- function(mat, ...) {
   diag(p.mat) <- 0
   for (i in 1:(n - 1)) {
     for (j in (i + 1):n) {
-      tmp <- cor.test(mat[, i], mat[, j], ...)
+      tmp <- cor.test(mat[, i], mat[, j], method = "spearman", ...)
       p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
     }
   }
   colnames(p.mat) <- rownames(p.mat) <- colnames(mat)
   p.mat
 }
+
+# Make df of variables
+# Run corrplot on that df
+
+
 
 ### BASIN WIDE ####
 # SIF data
