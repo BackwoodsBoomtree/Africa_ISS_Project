@@ -29,8 +29,18 @@ vi_csv_list   <- list.files(mcd_dir_list, pattern = "*.csv", full.names = TRUE, 
 ## BUILD DF for regressions
 df <- data.frame(matrix(nrow = 36, ncol = 10))
 
+era5 <- read.csv(era5_csv_list[1], header = TRUE)
+era5 <- head(era5, 36)
 
-
+date <- era5$Date
+temp <- era5$t2m_mean
+vpd  <- era5$vpd_mean
+par  <- era5$par_mean
+sif  <- read.csv(tropomi_csv_list[1], header = TRUE)$Mean
+evi  <- read.csv(vi_csv_list[1], header = TRUE)$EVI[13:48]
+lswi <- read.csv(vi_csv_list[13], header = TRUE)$LSWI[13:48]
+ndvi <- read.csv(vi_csv_list[25], header = TRUE)$NDVI[13:48]
+nirv <- read.csv(vi_csv_list[37], header = TRUE)$NIRv[13:48]
 
 # P function
 cor.mtest <- function(mat, ...) {
