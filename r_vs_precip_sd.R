@@ -2,24 +2,20 @@
 library(stringr)
 
 #### Output PDF name ####
-out_name  <- "G:/Africa/figs/r_vs_precip_sd.pdf"
+out_name  <- "G:/Africa/figs/r_vs_precip_sd_v2.pdf"
 trop_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/TROPOMI", pattern = "*.csv", full.names = TRUE)
 evi_list  <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_EVI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
 nirv_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_NIRv/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
 ndvi_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_NDVI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
 lswi_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_LSWI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
-df_precip <- read.csv("G:/Africa/csv/precip/TropicalAfricaMonthlyPrecipPerEcoregion.csv")
+df_precip <- read.csv("G:/Africa/csv/precip/TropicalAfricaMonthlyPrecipPerEcoregionESAMask04252023.csv", header = TRUE)
 
 # Remove Niger forest
-trop_list <- c(trop_list[1:6], trop_list[9:12])
-evi_list <- c(evi_list[1], evi_list[3], evi_list[2], evi_list[5], evi_list[6:7],
-              evi_list[10], evi_list[12:14])
-nirv_list <- c(nirv_list[1], nirv_list[3], nirv_list[2], nirv_list[5], nirv_list[6:7],
-               nirv_list[10], nirv_list[12:14])
-ndvi_list <- c(ndvi_list[1], ndvi_list[3], ndvi_list[2], ndvi_list[5], ndvi_list[6:7],
-               ndvi_list[10], ndvi_list[12:14])
-lswi_list <- c(lswi_list[1], lswi_list[3], lswi_list[2], lswi_list[5], lswi_list[6:7],
-               lswi_list[10], lswi_list[12:14])
+trop_list <- c(trop_list[1:6], trop_list[8], trop_list[10:13])
+evi_list  <- c(evi_list[1], evi_list[3], evi_list[2], evi_list[4:6], evi_list[9], evi_list[8], evi_list[10:12])
+nirv_list <- c(nirv_list[1], nirv_list[3], nirv_list[2], nirv_list[4:6], nirv_list[9], nirv_list[8], nirv_list[10:12])
+ndvi_list <- c(ndvi_list[1], ndvi_list[3], ndvi_list[2], ndvi_list[4:6], ndvi_list[9], ndvi_list[8], ndvi_list[10:12])
+lswi_list <- c(lswi_list[1], lswi_list[3], lswi_list[2], lswi_list[4:6], lswi_list[9], lswi_list[8], lswi_list[10:12])
 df_precip <- df_precip[df_precip$ecoregion != "Nigerian lowland forests",]
 df_precip <- df_precip[df_precip$ecoregion != "Niger Delta swamp forests",]
 df_precip <- df_precip[df_precip$ecoregion != "Cross-Niger transition forests",]
@@ -50,8 +46,8 @@ round2 = function(x, n, p) {
 }
 
 # Index for precip data
-p_start <- seq(1, 360, 36)
-p_end   <- seq(36, 360, 36)
+p_start <- seq(1, 396, 36)
+p_end   <- seq(36, 396, 36)
 
 # Get sd
 for (i in 1:length(unique(df_precip$ecoregion))) {

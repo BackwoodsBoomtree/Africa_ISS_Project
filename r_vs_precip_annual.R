@@ -8,19 +8,21 @@ evi_list  <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_EVI/monthly"
 nirv_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_NIRv/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
 ndvi_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_NDVI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
 lswi_list <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_LSWI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
-precip_df <- read.csv("G:/Africa/csv/precip/TropicalAfricaMonthlyPrecipPerEcoregionESAMask04252023.csv", header = TRUE)
+df_precip <- read.csv("G:/Africa/csv/precip/TropicalAfricaMonthlyPrecipPerEcoregionESAMask04252023.csv", header = TRUE)
 
-# Remove Nigerian Lowland and Niger Delta Swamp as I combined them
+# Remove Niger forest and reorder VIs to match precip and SIF
 trop_list <- c(trop_list[1:6], trop_list[8], trop_list[10:13])
-evi_list  <- c(evi_list[1], evi_list[3], evi_list[2], evi_list[4:6], evi_list[8:12])
-nirv_list <- c(nirv_list[1], nirv_list[3], nirv_list[2], nirv_list[4:6], nirv_list[8:12])
-ndvi_list <- c(ndvi_list[1], ndvi_list[3], ndvi_list[2], ndvi_list[4:6], ndvi_list[8:12])
-lswi_list <- c(lswi_list[1], lswi_list[3], lswi_list[2], lswi_list[4:6], lswi_list[8:12])
+evi_list  <- c(evi_list[1], evi_list[3], evi_list[2], evi_list[4:6], evi_list[9], evi_list[8], evi_list[10:12])
+nirv_list <- c(nirv_list[1], nirv_list[3], nirv_list[2], nirv_list[4:6], nirv_list[9], nirv_list[8], nirv_list[10:12])
+ndvi_list <- c(ndvi_list[1], ndvi_list[3], ndvi_list[2], ndvi_list[4:6], ndvi_list[9], ndvi_list[8], ndvi_list[10:12])
+lswi_list <- c(lswi_list[1], lswi_list[3], lswi_list[2], lswi_list[4:6], lswi_list[9], lswi_list[8], lswi_list[10:12])
+df_precip <- df_precip[df_precip$ecoregion != "Nigerian lowland forests",]
+df_precip <- df_precip[df_precip$ecoregion != "Niger Delta swamp forests",]
+df_precip <- df_precip[df_precip$ecoregion != "Cross-Niger transition forests",]
+df_precip <- df_precip[df_precip$ecoregion != "Mount Cameroon and Bioko montane forests",]
 
-# Sort Precip df and remove
-precip_df <- precip_df[order(precip_df$ecoregion),]
-precip_df$ecoregion[precip_df$ecoregion == "Niger Delta swamp and Nigerian lowland forests"] <- "Nigerian Lowland and Niger Delta Swamp Forest"
-row.names(precip_df) <- 1:nrow(precip_df)
+# Alphabetize the precip data to match TROPOMI
+df_precip <- df_precip[order(df_precip$ecoregion),]
 
 ### Can be used for pvalues
 round2 = function(x, n, p) {
@@ -48,8 +50,8 @@ p_start <- seq(1, 396, 36)
 p_end   <- seq(36, 396, 36)
 
 # Get annual total means
-for (i in 1:length(unique(precip_df$ecoregion))) {
-  precip_eco <- sum(precip_df$mean[(p_start[i]):(p_end[i])]) / 3
+for (i in 1:length(unique(df_precip$ecoregion))) {
+  precip_eco <- sum(df_precip$mean[(p_start[i]):(p_end[i])]) / 3
   
   if (i == 1) {
     precip_ann <- precip_eco
@@ -63,7 +65,7 @@ for (i in 1:length(trop_list)) {
   
   # Read Data
   t_sif  <- read.csv(trop_list[i])$Mean
-  precip <- precip_df$mean[p_start[i]:p_end[i]]
+  precip <- df_precip$mean[p_start[i]:p_end[i]]
   df     <- data.frame(precip, t_sif)
   colnames(df) <- c("x", "y")
   
@@ -86,7 +88,7 @@ for (i in 1:length(evi_list)) {
   # Read Data
   evi   <- read.csv(evi_list[i])$EVI / 10000
   evi   <- evi[13:48]
-  precip <- precip_df$mean[p_start[i]:p_end[i]]
+  precip <- df_precip$mean[p_start[i]:p_end[i]]
   df     <- data.frame(precip, evi)
   colnames(df) <- c("x", "y")
   
@@ -108,7 +110,7 @@ for (i in 1:length(nirv_list)) {
   # Read Data
   nirv   <- read.csv(nirv_list[i])$NIRv / 10000
   nirv   <- nirv[13:48]
-  precip <- precip_df$mean[p_start[i]:p_end[i]]
+  precip <- df_precip$mean[p_start[i]:p_end[i]]
   df     <- data.frame(precip, nirv)
   colnames(df) <- c("x", "y")
   
@@ -130,7 +132,7 @@ for (i in 1:length(ndvi_list)) {
   # Read Data
   ndvi   <- read.csv(ndvi_list[i])$NDVI / 10000
   ndvi   <- ndvi[13:48]
-  precip <- precip_df$mean[p_start[i]:p_end[i]]
+  precip <- df_precip$mean[p_start[i]:p_end[i]]
   df     <- data.frame(precip, ndvi)
   colnames(df) <- c("x", "y")
   
@@ -152,7 +154,7 @@ for (i in 1:length(lswi_list)) {
   # Read Data
   lswi   <- read.csv(lswi_list[i])$LSWI / 10000
   lswi   <- lswi[13:48]
-  precip <- precip_df$mean[p_start[i]:p_end[i]]
+  precip <- df_precip$mean[p_start[i]:p_end[i]]
   df     <- data.frame(precip, lswi)
   colnames(df) <- c("x", "y")
   
