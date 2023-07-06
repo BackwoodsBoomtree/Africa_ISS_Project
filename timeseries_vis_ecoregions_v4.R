@@ -32,7 +32,7 @@ csv_list   <- list.files(mcd_dir_list, pattern = "*.csv", full.names = TRUE, rec
 
 # PLOT
 
-cairo_pdf("G:/Africa/figs/timeseries_vis_ecoregions_2.5km_mask_v3.pdf", width = 20, height = 15)
+cairo_pdf("G:/Africa/figs/timeseries_vis_ecoregions_2.5km_mask_v4.pdf", width = 20, height = 15)
 
 par(mfrow = c(4, 3), oma=c(1.0,0.1,1.25,0.1))
 
@@ -72,8 +72,9 @@ for (i in 1:length(eco_list)) {
   rect(13, -1, 25, 100, col = rgb(0.85,0.85,0.85), border = NA)
   
   par(new = TRUE)
-  barplot(precip, lwd = 3, col = cols[3], axes = FALSE, xlab = "", ylab = "", ylim = c(0, 900), space = 0, border = NA)
-  axis(4, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 3)
+  barplot(precip, lwd = 3, col = cols[3], axes = FALSE, xlab = "", ylab = "", ylim = c(0, 1100), space = 0, border = NA)
+  axis(4, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 3, at = seq(0, 600, by = 100),
+       col = cols[3],  col.lab = cols[3],  col.axis = cols[3])
   
   if (length(eco_csv_list) > 1) {
     for (e in 1:length(eco_csv_list)) {
@@ -106,8 +107,8 @@ for (i in 1:length(eco_list)) {
 plot.new()
 lab_sif     <- bquote("TROPOMI SIFdaily 740 nm (mW/m"^"2"*"/sr/nm)")
 lab_precip  <- bquote("Mean total monthly precipiptation (mm)")
-legend("topright", legend = c("NDVI", "EVI", lab_sif, "LSWI", lab_precip),
-       col = c(cols[2], cols[1], "black", cols[3]), lty = c(1, 1, 1, NA), 
+legend("topright", legend = c("NDVI", "EVI", lab_sif, lab_precip),
+       col = c(cols[2], cols[1], "black", cols[3]), lty = c(2, 1, 1, NA), 
        pch = c(NA, NA, NA, 15), lwd = 3, cex = 2)
 
 dev.off()

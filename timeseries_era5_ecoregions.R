@@ -10,7 +10,7 @@ eco_list         <- c("AECF", "CHF", "CCLF", "CSBCF", "ECSF", "EGF",
                       "NLNDSF", "NECLF", "NWCLF", "WCSF", "WGLF")
 month_labs       <- format(seq(as.Date("2019/1/1"), as.Date("2021/12/1"), "month"), "%Y-%m")
 year_labs        <- c(2019, 2020, 2021)
-cols             <- c("#CC6677", "#117733", "#AA4499")
+cols             <- c("#FE6100", "#FE9A5C", "#AA4499", "#9CB7FF")
 x                <- 1:36
 
 # Remove Nigerian Lowland and Niger Delta Swamp as I combined them
@@ -64,14 +64,14 @@ for (i in 1:length(eco_list)) {
   box()
   
   par(new = TRUE)
-  barplot(precip, col = "#648FFF80", axes = FALSE, xlab = "", ylab = "", ylim = c(0, 1100), space = 0, border = NA)
+  barplot(precip, col = cols[4], axes = FALSE, xlab = "", ylab = "", ylim = c(0, 1100), space = 0, border = NA)
 
   if (i == 1 || i == 4 || i == 7 || i == 10) {
       axis(2, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 2.5, at = seq(0, 600, by = 100),
-       col = "#648FFF80",  col.lab = "#648FFF80",  col.axis = "#648FFF80", lwd = 2)
+       col = cols[4],  col.lab = cols[4],  col.axis = cols[4], lwd = 2)
   } else {
       axis(2, labels = FALSE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 2.5, at = seq(0, 600, by = 100),
-       col = "#648FFF80",  col.lab = "#648FFF80",  col.axis = "#648FFF80", lwd = 2)
+       col = cols[4],  col.lab = cols[4],  col.axis = cols[4], lwd = 2)
   }
 
   par(new = TRUE)
@@ -124,7 +124,7 @@ lab_precip  <- bquote("Mean Total Monthly Precipiptation (mm)")
 lab_par     <- bquote("Photosynthetically Active Radiation (W/m"^"2"*")")
 legend("topright", legend = c("Temperature (°C)", lab_par,
                               lab_sif, "Vapor Pressure Deficit (kPa)", lab_precip),
-       col = c("#117733", "#CC6677", "black", "#AA4499", "#648FFF80"), lty = c(1, 3, 1, 1, NA), 
+       col = c(cols[1], cols[2], "black", cols[3], cols[4]), lty = c(1, 3, 1, 1, NA), 
        pch = c(NA, NA, NA, NA, 15), lwd = 3, cex = 2.15, y.intersp = 1.5)
 
 dev.off()
