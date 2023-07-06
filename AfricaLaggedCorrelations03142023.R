@@ -1,7 +1,5 @@
-
 library(tidyverse)
 library(cowplot)
-
 
 # Read in what we need to plot
 evi_list     <- list.files("G:/Africa/csv/ecoregions/mask_Dans/MCD43A4_EVI/monthly", pattern = "*.csv", full.names = TRUE, recursive = TRUE)
@@ -121,13 +119,17 @@ precip_df$ecoregion[precip_df$ecoregion == "Niger Delta swamp and Nigerian lowla
 row.names(precip_df) <- 1:nrow(precip_df)
 p_start <- seq(1, 396, 36)
 p_end   <- seq(36, 396, 36)
+
 for (i in 1:length(unique(precip_df$ecoregion))) {
   precip_eco <- sum(precip_df$mean[(p_start[i]):(p_end[i])]) / 3
+  sd_eco     <- sd(precip_df$mean[(p_start[i]):(p_end[i])])
   
   if (i == 1) {
     precip_ann <- precip_eco
+    sd_ann     <- sd_eco
   } else {
     precip_ann <- c(precip_ann, precip_eco)
+    sd_ann     <- c(sd_ann, sd_eco)
   }
 }
 precip_ann <- round(precip_ann)
@@ -139,7 +141,7 @@ y <- c(-1, 1)
 
 eco_index <- seq(1, 143, by = 13)
 
-par(mfrow = c(4, 3), oma=c(1.0,4,1.25,0.1))
+par(mfrow = c(4, 3), oma=c(1.25,4.25,1.25,0.1))
 
 for (i in 1:11) {
   
@@ -155,29 +157,34 @@ for (i in 1:11) {
     tit    <- "Nigerian Lowland and Niger Delta Forest"
   }
   
+  map <- paste0("MAP: ", round(precip_ann[i], 0), " mm")
+  sd  <- paste0("SD:   ", round(sd_ann[i], 0), " mm")
+  
   
   # Do TROPOMI First
   plot(x, rep(0, 13), type = "l", main = tit, 
        axes = FALSE, xlab = NA, ylab = NA, cex.main = 2.8, ylim = y, lwd = 3, col = "gray")
   lines(x, sif_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3)
-  lines(x, ndvi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#dc267f")
-  lines(x, evi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#FE6100", lty = 2)
-  lines(x, lswi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#ffb000")
+  lines(x, ndvi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#117733", lty = 2)
+  lines(x, evi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#85B997")
+  # lines(x, lswi_lag$acf_vals[eco_index[i] : (eco_index[i] + 12)], lwd = 3, col = "#ffb000")
 
   axis(1, labels = TRUE, tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 3)
   axis(2, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 3)
-  legend("topleft", legend = paste0("MAP: ", precip_ann[i], " mm"), cex = 2, bty = "n")
+  legend("topleft", legend = c(map, sd), cex = 2, bty = "n")
   box()
   
 }
 
-mtext("Lag", side = 1, outer = TRUE, line = -1, cex = 3)
-mtext("Coefficient", side = 2, outer = TRUE, line = 0.5, cex = 3)
+mtext("Lag", side = 1, outer = TRUE, line = -0.75, cex = 3)
+mtext("Coefficient", side = 2, outer = TRUE, line = 0.75, cex = 3)
 
 plot.new()
-legend("top", legend = c("TROPOMI SIF", "NDVI", "EVI", "LSWI", "MAP: Mean Annual Precipitation"),
-       col = c("black", "#dc267f", "#FE6100", "#ffb000"),
-       lty = c(1, 1, 2, 1), lwd = c(3, 3, 3, 3, NA), cex = 2)
+legend("top", legend = c("TROPOMI SIF", "EVI", "NDVI", "MAP: Mean Annual Precipitation",
+                         "SD: Standard Deviation of Monthly Precipitation",
+                         "x-axis: Lag in Months", "y-axis: Correlation Coefficient"),
+       col = c("black", "#85B997", "#117733"),
+       lty = c(1, 1, 2), lwd = c(3, 3, 3, NA, NA, NA, NA), cex = 2)
 
 dev.off()
 
