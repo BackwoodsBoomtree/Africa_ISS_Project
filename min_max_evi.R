@@ -94,6 +94,13 @@ for (i in 1:ncol(evi_files)) {
   }
 }
 
+# Min-Max normalize the series
+min_max_norm <- function(x) {
+  (x - min(x)) / (max(x) - min(x))
+}
+
+all_merge_norm <- app(all_merge, fun = min_max_norm)
+
 # plot(max_month_merge)
 
 writeCDF(max_month_merge, "G:/MCD43A4/vis/africa/min_max_monthly/max_monthly_2019-2021_EVI.nc",
@@ -121,4 +128,7 @@ writeCDF(min_y3_merge, "G:/MCD43A4/vis/africa/min_max_monthly/min_monthly_2021_E
          missval = -9999, compression = 4, overwrite = TRUE)
 
 writeCDF(all_merge, "G:/MCD43A4/vis/africa/min_max_monthly/monthly_2019-2021_EVI.nc",
+         missval = -9999, compression = 4, overwrite = TRUE)
+
+writeCDF(all_merge_norm, "G:/MCD43A4/vis/africa/min_max_monthly/monthly_2019-2021_EVI_norm.nc",
          missval = -9999, compression = 4, overwrite = TRUE)
