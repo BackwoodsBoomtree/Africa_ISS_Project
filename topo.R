@@ -16,11 +16,18 @@ for (i in 1:length(topo_files)) {
   }
 }
 
-topo <- mask(topo, evi_max)
-topo <- mask(topo, ecos)
-topo <- mask(topo, lc_mask)
+topo <- crop(topo, evi_max)
 
-# topo[topo < 500] <- 500
+topo <- resample(topo, evi_max, method = "bilinear")
+
+topo <- mask(topo, evi_max)
+
+test <- na.omit(as.vector(topo))
+test2 <- na.omit(as.vector(evi_max))
+
+vs <- cor(test, test2, method = "spearman")
+
+# for visualization
 topo[topo > 1000] <- 1000
 
 plot(topo, col = rev(viridis(10)))
