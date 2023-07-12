@@ -182,7 +182,7 @@ df_p_vpd    <- data.frame(p_tro_vpd, p_evi_vpd, p_ndvi_vpd)
 df_r_diff  <- df_r_vpd + df_r_precip
 
 # Labels
-lab_r      <- bquote("Difference in Spearman's Corrleation Coefficient (VPD - Precip)")
+lab_r      <- bquote("Difference in Spearman's Corrleation Coefficient (VPD + Precip)")
 lab_annual <- bquote("Mean Annual Total Precipitation (mm)")
 lab_sd     <- bquote("Standard Deviation of Monthly Precipitation (mm)")
 # titles     <- c("TROPOMI SIF", "EVI", "NIRv", "NDVI", "LSWI")
