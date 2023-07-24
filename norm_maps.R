@@ -10,6 +10,7 @@ coastlines <- vect("C:/Russell/R_Scripts/TROPOMI_2/mapping/GSHHS_shp/c/GSHHS_c_L
 
 i_seq <- seq(1, 10, 3)
 
+
 cairo_pdf("G:/Africa/figs/norm_maps.pdf", width = 7.5, height = 7.5)
 
 par(mfrow = c(5, 4), oma=c(0,0,1,0))
