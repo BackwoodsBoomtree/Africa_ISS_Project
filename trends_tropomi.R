@@ -42,6 +42,8 @@ for (i in 1:length(dir_list)) {
   }
 }
 
+write.csv(df, "G:/Africa/csv/ecoregions/mask_Dans/TROPOMI_Daily_Mean/TROPOMI_Daily_Means_2019-2021.csv", row.names = FALSE)
+
 ## Daily PLOTS
 x <- 1:length(dates)
 year_labs <- c(2019, 2020, 2021)
