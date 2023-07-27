@@ -2,8 +2,8 @@ library(Kendall)
 
 options(scipen = 999)
 
-df_all <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Monthly_Mean/OCO2_Congo_Monthly_Means_2015-2021.csv", header = TRUE)
-df_cs  <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Monthly_Mean/OCO2_Congo_Monthly_Means_2015-2021_cs.csv", header = TRUE)
+df_all <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Seasonal_Mean/OCO2_Congo_Monthly_Means_2015-2021.csv", header = TRUE)
+df_cs  <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Seasonal_Mean/OCO2_Congo_Monthly_Means_2015-2021_cs.csv", header = TRUE)
 
 monthly_all_ts <- ts(df_all$SIF_740d, start = c(2015, 1), frequency = 12)
 monthly_cs_ts  <- ts(df_cs$SIF_740d, start = c(2015, 1), frequency = 12)

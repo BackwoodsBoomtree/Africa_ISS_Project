@@ -8,16 +8,28 @@ dir_list    <- str_subset(dir_list, pattern = "Congo", negate = FALSE)
 file_list   <- list.files(dir_list, full.names = TRUE, recursive = TRUE)
 
 # Create dfs for all obs and clearsky
-dates  <- seq(as.Date("2015/1/1"), as.Date("2021/12/31"), "days")
-df_all     <- data.frame(matrix(NA, nrow = length(dates), ncol = 5))
-df_all[,1] <- dates
+dates   <- seq(as.Date("2015/1/1"), as.Date("2021/12/1"), "months")
+dates   <- format(dates, format = "%Y-%m")
+seasons <- c(dates[1], dates[seq(3, (length(dates) - 1), 3)])
+df_all     <- data.frame(matrix(NA, nrow = length(seasons), ncol = 5))
+df_all[,1] <- seasons
 colnames(df_all) <- c("Dates", "SIF_740d", "n", "sd", "sem")
 df_cs      <- df_all
 
-for (i in 1:length(dates)) {
-  message("Working on ", dates[i])
+index <- seq(0, 83, by = 3)
+
+for (i in 1:28) {
   
-  day_files <- str_subset(file_list, pattern = toString(dates[i]), negate = FALSE)
+  if (i == 1) {
+    months    <- c(toString(dates[12]), toString(dates[1]), toString(dates[2]))
+    day_files <- str_subset(file_list, paste0(months, collapse = '|'))
+    
+  } else {
+    months    <- c(toString(dates[index[i]]), toString(dates[index[i] + 1]), toString(dates[index[i] + 2]))
+    day_files <- str_subset(file_list, paste0(months, collapse = '|'))
+  }
+  
+  message(paste0("Working on months ", paste0(months, collapse = " "), ". Length of file list is: ", length(day_files)))
   
   if (length(day_files) > 0) {
     
@@ -60,6 +72,5 @@ for (i in 1:length(dates)) {
   }
 }
 
-write.csv(df_all, "G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Daily_Mean/OCO2_Congo_Daily_Means_2015-2021.csv", row.names = FALSE)
-write.csv(df_cs, "G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Daily_Mean/OCO2_Congo_Daily_Means_2015-2021_cs.csv", row.names = FALSE)
-
+write.csv(df_all, "G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Seasonal_Mean/OCO2_Congo_Seasonal_Means_2015-2021.csv", row.names = FALSE)
+write.csv(df_cs, "G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Seasonal_Mean/OCO2_Congo_Seasonal_Means_2015-2021_cs.csv", row.names = FALSE)

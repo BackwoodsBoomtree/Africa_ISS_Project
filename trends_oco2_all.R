@@ -1,4 +1,6 @@
 library(Kendall)
+library(zoo)
+library(forecast)
 
 df_all <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Monthly_Mean/OCO2_Congo_Monthly_Means_2015-2021.csv", header = TRUE)
 df_cs  <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Monthly_Mean/OCO2_Congo_Monthly_Means_2015-2021_cs.csv", header = TRUE)
@@ -15,8 +17,8 @@ monthly_cs_ts_desea  <- seasadj(decompose(monthly_cs_ts))
 
 
 # PLOTS
-dates  <- seq(as.Date("2015/1/1"), as.Date("2021/12/1"), "months")
-dates  <- format(dates, format = "%Y-%m")
+dates     <- seq(as.Date("2015/1/1"), as.Date("2021/12/1"), "months")
+dates     <- format(dates, format = "%Y-%m")
 x         <- 1:length(dates)
 year_labs <- seq(2015, 2021)
 
