@@ -5,12 +5,12 @@ library(gsubfn)
 options(scipen = 999)
 
 # Here we look at all equatorial forests
-dir_list    <- list.dirs("G:/GOSAT_SIF/extracted/africa", recursive = FALSE)
+dir_list    <- list.dirs("G:/GOME2/extracted/africa", recursive = FALSE)
 dir_list    <- str_subset(dir_list, pattern = "Congo", negate = FALSE)
 file_list   <- list.files(dir_list, full.names = TRUE, recursive = TRUE)
 
 # Create dfs for all obs and clearsky
-dates  <- seq(as.Date("2009/7/1"), as.Date("2020/6/1"), "months")
+dates  <- seq(as.Date("2007/2/1"), as.Date("2018/1/31"), "months")
 dates  <- format(dates, format = "%Y-%m")
 df_all     <- data.frame(matrix(NA, nrow = length(dates), ncol = 5))
 df_all[,1] <- dates
@@ -25,8 +25,8 @@ for (i in 1:length(dates)) {
   if (length(day_files) > 0) {
     
     for (j in 1:length(day_files)) {
-      sif_file   <- vect(day_files[j])$Daily_SIF_740nm
-      cloud_file <- vect(day_files[j])$cloud_flag_abp
+      sif_file   <- vect(day_files[j])$Daily_Averaged_SIF
+      cloud_file <- vect(day_files[j])$Cloud_Fraction
       
       if (j == 1) {
         sif_day   <- sif_file
@@ -38,7 +38,7 @@ for (i in 1:length(dates)) {
     }
     
     # Filter for only clear sky
-    sif_day_cs <- subset(sif_day, cloud_day %in% 0)
+    sif_day_cs <- subset(sif_day, cloud_day <= 0.2)
     
     # Stats for the day
     sif_day_mean    <- mean(sif_day, na.rm = TRUE)
@@ -63,5 +63,5 @@ for (i in 1:length(dates)) {
   }
 }
 
-write.csv(df_all, "G:/Africa/csv/ecoregions/mask_Dans/GOSAT_Congo_Monthly_Mean/GOSAT_Congo_Monthly_Means_2009-2020.csv", row.names = FALSE)
-write.csv(df_cs, "G:/Africa/csv/ecoregions/mask_Dans/GOSAT_Congo_Monthly_Mean/GOSAT_Congo_Monthly_Means_2009-2020_cs.csv", row.names = FALSE)
+write.csv(df_all, "G:/Africa/csv/ecoregions/mask_Dans/GOME2_Congo_Monthly_Mean/GOME2_Congo_Monthly_Means_2007-2018.csv", row.names = FALSE)
+write.csv(df_cs, "G:/Africa/csv/ecoregions/mask_Dans/GOME2_Congo_Monthly_Mean/GOME2_Congo_Monthly_Means_2007-2018_cs.csv", row.names = FALSE)

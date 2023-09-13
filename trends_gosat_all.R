@@ -1,12 +1,12 @@
 library(Kendall)
+library(zoo)
+library(forecast)
 
-options(scipen = 999)
+df_all <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/GOSAT_Congo_Monthly_Mean/GOSAT_Congo_Monthly_Means_2009-2020.csv", header = TRUE)
+df_cs  <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/GOSAT_Congo_Monthly_Mean/GOSAT_Congo_Monthly_Means_2009-2020_cs.csv", header = TRUE)
 
-df_all <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Seasonal_Mean/OCO2_Congo_Seasonal_Means_2015-2021.csv", header = TRUE)
-df_cs  <- read.csv("G:/Africa/csv/ecoregions/mask_Dans/OCO2_Congo_Seasonal_Mean/OCO2_Congo_Seasonal_Means_2015-2021_cs.csv", header = TRUE)
-
-monthly_all_ts <- ts(df_all$SIF_740d, start = c(2015, 1), frequency = 12)
-monthly_cs_ts  <- ts(df_cs$SIF_740d, start = c(2015, 1), frequency = 12)
+monthly_all_ts <- ts(df_all$SIF_740d, start = c(2009, 7), frequency = 12)
+monthly_cs_ts  <- ts(df_cs$SIF_740d, start = c(2009, 7), frequency = 12)
 
 # Fill the missing values using a seasonal Kalman filter (needed for using in trend package)
 monthly_all_ts <- na.StructTS(monthly_all_ts)
@@ -17,12 +17,12 @@ monthly_cs_ts_desea  <- seasadj(decompose(monthly_cs_ts))
 
 
 # PLOTS
-dates  <- seq(as.Date("2015/1/1"), as.Date("2021/12/1"), "months")
-dates  <- format(dates, format = "%Y-%m")
+dates     <- seq(as.Date("2009/7/1"), as.Date("2020/6/1"), "months")
+dates     <- format(dates, format = "%Y-%m")
 x         <- 1:length(dates)
-year_labs <- seq(2015, 2021)
+year_labs <- seq(2009, 2020)
 
-cairo_pdf("G:/Africa/figs/trends_oco2_seasons.pdf", width = 7.5, height = 4)
+cairo_pdf("G:/Africa/figs/trends_gosat_all.pdf", width = 7.5, height = 4)
 
 par(mfrow = c(2, 2), oma=c(1.0,3.25,0,0.1))
 
@@ -36,7 +36,7 @@ plot(x, monthly_all_ts, type = "l", main = "All observations", axes = FALSE, xla
 lines(x, monthly_all_ts, lwd = 3)
 abline(reg, lwd = 3,col = "red")
 
-axis(1, labels = NA, at =  seq(1, 73, by = 12), tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 1)
+axis(1, labels = NA, at =  seq(1, 133, by = 12), tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 1)
 axis(2, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 1)
 
 mk    <- round(MannKendall(monthly_all_ts)[[2]][1], 2)
@@ -54,13 +54,13 @@ plot(x, monthly_all_ts_desea, type = "l", main = "All observations deseasonalize
 lines(x, monthly_all_ts_desea, lwd = 3)
 abline(reg, lwd = 3,col = "red")
 
-axis(1, labels = NA, at =  seq(1, 73, by = 12), tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 1)
+axis(1, labels = NA, at =  seq(1, 133, by = 12), tck = 0.03, mgp=c(3, 1.5, 0), las = 1, cex.axis = 1)
 axis(2, labels = NA, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 1)
 
 smk   <- round(SeasonalMannKendall(monthly_all_ts)[[2]][1], 2)
 slope <- round(coef(reg)[[2]], 4)
 
-legend("topright", border = NA, legend = c(paste0("SMK p-value = < 0.05"), paste0("slope = ", slope)))
+legend("topright", border = NA, legend = c(paste0("SMK p-value = ", smk), paste0("slope = ", slope)))
 
 box()
 
@@ -72,7 +72,7 @@ plot(x, monthly_cs_ts, type = "l", main = "Clearsky observations", axes = FALSE,
 lines(x, monthly_cs_ts, lwd = 3)
 abline(reg, lwd = 3,col = "red")
 
-axis(1, labels = year_labs, at =  seq(1, 73, by = 12), tck = 0.03, mgp=c(3, 0.2, 0), las = 1, cex.axis = 1)
+axis(1, labels = year_labs, at =  seq(1, 133, by = 12), tck = 0.03, mgp=c(3, 0.2, 0), las = 1, cex.axis = 1)
 axis(2, labels = TRUE, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 1)
 
 mk    <- round(MannKendall(monthly_cs_ts)[[2]][1], 2)
@@ -90,13 +90,13 @@ plot(x, monthly_cs_ts_desea, type = "l", main = "Clearsky observations deseasona
 lines(x, monthly_cs_ts_desea, lwd = 3)
 abline(reg, lwd = 3,col = "red")
 
-axis(1, labels = year_labs, at =  seq(1, 73, by = 12), tck = 0.03, mgp=c(3, 0.2, 0), las = 1, cex.axis = 1)
+axis(1, labels = year_labs, at =  seq(1, 133, by = 12), tck = 0.03, mgp=c(3, 0.2, 0), las = 1, cex.axis = 1)
 axis(2, labels = NA, tck = 0.03, mgp=c(3, 0.2, 0), las = 2, cex.axis = 1)
 
 smk   <- round(SeasonalMannKendall(monthly_cs_ts)[[2]][1], 2)
 slope <- round(coef(reg)[[2]], 4)
 
-legend("topright", border = NA, legend = c(paste0("SMK p-value = < 0.01"), paste0("slope = ", slope)))
+legend("topright", border = NA, legend = c(paste0("SMK p-value = ", smk), paste0("slope = ", slope)))
 
 box()
 
